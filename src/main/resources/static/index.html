@@ -1,0 +1,548 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Atelier Manager</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Menu lateral -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>Atelier Manager</h2>
+            <span>Gestão do Atelier</span>
+        </div>
+
+        <nav class="menu">
+            <a href="#" class="active" data-page="dashboard">Dashboard</a>
+            <a href="#" data-page="clientes">Clientes</a>
+            <a href="#" data-page="ordens">Ordens de Serviço</a>
+            <a href="#" data-page="estoque">Estoque</a>
+            <a href="#" data-page="movimentacoes">Movimentações</a>
+        </nav>
+
+    </aside>
+
+    <!-- Conteúdo principal -->
+    <main class="main-content">
+
+        <!-- DASHBOARD -->
+        <section id="dashboard-page" class="page-content">
+
+            <header class="header">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>Bem-vindo ao Atelier Manager!</p>
+                </div>
+            </header>
+
+            <!-- Indicadores -->
+            <section class="cards">
+
+                <div class="card">
+                    <h3>Total de Clientes</h3>
+                    <p>0</p>
+                    <span>Clientes cadastrados</span>
+                </div>
+
+                <div class="card">
+                    <h3>Ordens Pendentes</h3>
+                    <p>0</p>
+                    <span>Aguardando produção</span>
+                </div>
+
+                <div class="card">
+                    <h3>Em Produção</h3>
+                    <p>0</p>
+                    <span>Serviços em andamento</span>
+                </div>
+
+                <div class="card">
+                    <h3>Serviços Prontos</h3>
+                    <p>0</p>
+                    <span>Aguardando retirada</span>
+                </div>
+
+            </section>
+
+            <!-- Últimas ordens -->
+            <section class="recent-orders">
+
+                <div class="section-header">
+                    <h2>Últimas Ordens de Serviço</h2>
+                    <a href="#" data-page="ordens">Ver todas</a>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Serviço</th>
+                            <th>Entrega</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr>
+                            <td>Maria Clara</td>
+                            <td>Ajuste de vestido</td>
+                            <td>15/11/2026</td>
+                            <td><span class="status pending">Pendente</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>Ana Oliveira</td>
+                            <td>Barra de calça</td>
+                            <td>17/11/2026</td>
+                            <td><span class="status production">Em produção</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>Carlos Souza</td>
+                            <td>Ajuste de camisa</td>
+                            <td>18/11/2026</td>
+                            <td><span class="status ready">Pronta</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+        </section>
+
+        <!-- CLIENTES -->
+        <section id="clientes-page" class="page-content" hidden>
+
+            <header class="header">
+                <div>
+                    <h1>Clientes</h1>
+                    <p>Gerencie os clientes cadastrados no atelier.</p>
+                </div>
+            </header>
+
+            <div class="clients-toolbar">
+
+                <div class="search-box">
+                    <input
+                            type="text"
+                            id="pesquisa-cliente"
+                            placeholder="Pesquisar por nome ou telefone..."
+                    >
+                </div>
+
+                <button id="btn-novo-cliente" class="btn-primary">
+                    + Novo Cliente
+                </button>
+
+            </div>
+
+
+            <!-- Formulário de cadastro de cliente -->
+            <section id="form-cliente" class="recent-orders" hidden>
+
+                <div class="section-header">
+                    <h2>Novo Cliente</h2>
+                </div>
+
+                <form id="cadastro-cliente">
+
+                    <div class="form-group">
+                        <label for="nome-cliente">Nome completo</label>
+                        <input
+                                type="text"
+                                id="nome-cliente"
+                                name="nome"
+                                placeholder="Digite o nome do cliente"
+                                maxlength="100"
+                                required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefone-cliente">Telefone</label>
+                        <input
+                                type="tel"
+                                id="telefone-cliente"
+                                name="telefone"
+                                placeholder="(62) 99999-9999"
+                                maxlength="20"
+                                required
+                        >
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            Salvar Cliente
+                        </button>
+
+                        <button type="button" id="btn-cancelar-cliente" class="btn-secondary">
+                            Cancelar
+                        </button>
+                    </div>
+
+                </form>
+
+            </section>
+
+            <section class="recent-orders">
+
+                <div class="section-header">
+                    <h2>Clientes cadastrados</h2>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Telefone</th>
+                            <th>Ações</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="lista-clientes">
+                        <!-- Clientes carregados pela API -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <section id="estoque-page" class="page-content" hidden>
+
+            <header class="header">
+                <div>
+                    <h1>Controle de Estoque</h1>
+                    <p>Gerencie os materiais e acompanhe os níveis de estoque.</p>
+                </div>
+            </header>
+
+            <div class="clients-toolbar">
+                <div class="search-box">
+                    <input
+                            type="text"
+                            id="pesquisa-insumo"
+                            placeholder="Pesquisar material..."
+                    >
+                </div>
+
+                <button id="btn-novo-insumo" class="btn-primary">
+                    + Novo Material
+                </button>
+            </div>
+
+            <!-- Formulário de cadastro -->
+            <section id="form-insumo" class="recent-orders" hidden>
+
+                <div class="section-header">
+                    <h2 id="titulo-form-insumo">Novo Material</h2>
+                </div>
+
+                <form id="cadastro-insumo">
+
+                    <div class="form-group">
+                        <label for="nome-insumo">Nome do material</label>
+                        <input type="text" id="nome-insumo"
+                               maxlength="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantidade-insumo">Quantidade atual</label>
+                        <input type="number" id="quantidade-insumo"
+                               min="0" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="unidade-insumo">Unidade de medida</label>
+                        <input type="text" id="unidade-insumo"
+                               maxlength="30" placeholder="Ex.: Unidade, rolo, metro"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="minimo-insumo">Estoque mínimo</label>
+                        <input type="number" id="minimo-insumo"
+                               min="0" step="0.01" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            Salvar Material
+                        </button>
+
+                        <button type="button" id="btn-cancelar-insumo"
+                                class="btn-secondary">
+                            Cancelar
+                        </button>
+                    </div>
+
+                </form>
+            </section>
+
+            <!-- Listagem de materiais -->
+            <section class="recent-orders">
+
+                <div class="section-header">
+                    <h2>Materiais cadastrados</h2>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Material</th>
+                            <th>Quantidade</th>
+                            <th>Unidade</th>
+                            <th>Estoque mínimo</th>
+                            <th>Situação</th>
+                            <th>Ações</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="lista-insumos">
+                        <!-- Insumos carregados pela API -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+        </section>
+
+        <!-- ORDENS DE SERVIÇO -->
+        <section id="ordens-page" class="page-content" hidden>
+
+            <header class="header">
+                <div>
+                    <h1>Ordens de Serviço</h1>
+                    <p>Gerencie os serviços realizados pelo atelier.</p>
+                </div>
+            </header>
+
+            <div class="clients-toolbar">
+
+                <div class="search-box">
+                    <input
+                            type="text"
+                            id="pesquisa-ordem"
+                            placeholder="Pesquisar por cliente ou status..."
+                    >
+                </div>
+
+                <button id="btn-nova-ordem" class="btn-primary">
+                    + Nova Ordem
+                </button>
+
+            </div>
+
+            <!-- FORMULÁRIO -->
+            <section id="form-ordem" class="recent-orders" hidden>
+
+                <div class="section-header">
+                    <h2 id="titulo-form-ordem">Nova Ordem de Serviço</h2>
+                </div>
+
+                <form id="cadastro-ordem">
+
+                    <div class="form-group">
+                        <label for="cliente-ordem">Cliente</label>
+                        <select id="cliente-ordem" required>
+                            <option value="">Selecione um cliente</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="data-entrada">Data de entrada</label>
+                        <input type="date" id="data-entrada" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="data-entrega">Previsão de entrega</label>
+                        <input type="date" id="data-entrega" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valor-total">Valor total (R$)</label>
+                        <input
+                                type="number"
+                                id="valor-total"
+                                min="0"
+                                step="0.01"
+                                placeholder="0,00"
+                                required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status-ordem">Status</label>
+                        <select id="status-ordem" required>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Em andamento">Em andamento</option>
+                            <option value="Pronto">Pronto</option>
+                            <option value="Retirado">Retirado</option>
+                            <option value="Finalizado">Finalizado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="observacoes-ordem">Observações</label>
+                        <textarea
+                                id="observacoes-ordem"
+                                maxlength="500"
+                                placeholder="Observações sobre a ordem de serviço..."
+                        ></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            Salvar Ordem
+                        </button>
+
+                        <button type="button" id="btn-cancelar-ordem" class="btn-secondary">
+                            Cancelar
+                        </button>
+                    </div>
+
+                </form>
+
+            </section>
+
+            <!-- LISTAGEM -->
+            <section class="recent-orders">
+
+                <div class="section-header">
+                    <h2>Ordens cadastradas</h2>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Entrada</th>
+                            <th>Entrega</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="lista-ordens">
+                        <!-- Ordens carregadas pela API -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- MOVIMENTAÇÕES DE ESTOQUE -->
+        <section id="movimentacoes-page" class="page-content" hidden>
+
+            <header class="header">
+                <div>
+                    <h1>Movimentações de Estoque</h1>
+                    <p>Registre entradas e saídas e consulte o histórico.</p>
+                </div>
+            </header>
+
+            <section class="recent-orders">
+
+                <div class="section-header">
+                    <h2>Registrar movimentação</h2>
+                </div>
+
+                <form id="cadastro-movimentacao">
+
+                    <div class="form-group">
+                        <label for="insumo-movimentacao">Material</label>
+                        <select id="insumo-movimentacao" required>
+                            <option value="">Selecione um material</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipo-movimentacao">Tipo</label>
+                        <select id="tipo-movimentacao" required>
+                            <option value="">Selecione</option>
+                            <option value="Entrada">Entrada</option>
+                            <option value="Saída">Saída</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantidade-movimentacao">Quantidade</label>
+                        <input
+                                type="number"
+                                id="quantidade-movimentacao"
+                                min="0.01"
+                                step="0.01"
+                                required
+                        >
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            Registrar movimentação
+                        </button>
+                    </div>
+
+                </form>
+
+            </section>
+
+            <section class="recent-orders">
+
+                <div class="section-header">
+                    <h2>Histórico de movimentações</h2>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Material</th>
+                            <th>Tipo</th>
+                            <th>Quantidade</th>
+                            <th>Data</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="lista-movimentacoes">
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="js/app.js"></script>
+
+</body>
+</html>

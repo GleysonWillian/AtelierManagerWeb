@@ -1,0 +1,14 @@
+# Maven
+target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Configurações locais
+.env
+.env.*
+!.env.example
+
+# Configurações locais do Spring
+application-local.properties
