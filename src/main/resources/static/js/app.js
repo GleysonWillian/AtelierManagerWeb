@@ -20,6 +20,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!pagina) return;
 
+            if (paginaSelecionada === "dashboard") {
+                atualizarDashboard();
+            }
+
             paginas.forEach(item => item.hidden = true);
             pagina.hidden = false;
 
@@ -325,6 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Cliente excluído com sucesso!");
 
             await listarClientes();
+            await atualizarDashboard();
 
         } catch (erro) {
 
@@ -386,6 +391,7 @@ document.addEventListener("DOMContentLoaded", () => {
             areaFormularioCliente.hidden = true;
 
             await listarClientes();
+            await atualizarDashboard();
 
         } catch (erro) {
 
@@ -734,6 +740,7 @@ document.addEventListener("DOMContentLoaded", () => {
             areaFormularioOrdem.hidden = true;
 
             await listarOrdens();
+            await atualizarDashboard();
 
         } catch (erro) {
 
@@ -781,6 +788,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Ordem excluída com sucesso!");
 
             await listarOrdens();
+            await atualizarDashboard();
 
         } catch (erro) {
 
