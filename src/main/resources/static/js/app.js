@@ -51,6 +51,97 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
+    // =====================================
+    // DASHBOARD - ATUALIZAR INDICADORES
+    // =====================================
+
+    async function atualizarDashboard() {
+
+        try {
+
+            const [respostaClientes, respostaOrdens] = await Promise.all([
+                fetch("/api/clientes"),
+                fetch("/api/ordens")
+            ]);
+
+            if (!respostaClientes.ok || !respostaOrdens.ok) {
+                throw new Error("Erro ao carregar dados do Dashboard.");
+            }
+
+            const clientes = await respostaClientes.json();
+            const ordens = await respostaOrdens.json();
+
+            // Atualizar total de clientes
+            document.getElementById("total-clientes").textContent =
+                clientes.length;
+
+            // Contabilizar ordens por status
+            const pendentes = ordens.filter(
+                ordem => ordem.status === "Pendente"
+            ).length;
+
+            const producao = ordens.filter(
+                ordem => ordem.status === "Em andamento"
+            ).length;
+
+            const prontas = ordens.filter(
+                ordem => ordem.status === "Pronto"
+            ).length;
+
+            document.getElementById("ordens-pendentes").textContent =
+                pendentes;
+
+            document.getElementById("ordens-producao").textContent =
+                producao;
+
+            document.getElementById("servicos-prontos").textContent =
+                prontas;
+
+            // Ordenar pelas ordens mais recentes
+            const ultimasOrdens = [...ordens]
+                .sort((a, b) => b.idOrdem - a.idOrdem)
+                .slice(0, 3);
+
+            const tabelaDashboard =
+                document.getElementById("ultimas-ordens");
+
+            tabelaDashboard.innerHTML = "";
+
+            if (ultimasOrdens.length === 0) {
+                tabelaDashboard.innerHTML = `
+                    <tr>
+                        <td colspan="4">Nenhuma ordem cadastrada.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            ultimasOrdens.forEach(ordem => {
+
+                const linha = document.createElement("tr");
+
+                linha.innerHTML = `
+                     <td>${ordem.nomeCliente}</td>
+                     <td>${ordem.servicos || "Nenhum serviço informado"}</td>
+                     <td>${formatarData(ordem.dataPrevistaEntrega)}</td>
+                     <td>${ordem.status}</td>
+                `;
+
+                tabelaDashboard.appendChild(linha);
+
+            });
+
+        } catch (erro) {
+
+            console.error("Erro ao atualizar Dashboard:", erro);
+
+        }
+    }
+
+        console.log("Dashboard chamada!");
+        atualizarDashboard();
+
+
 
     // =====================================
     // ELEMENTOS DOS CLIENTES
@@ -304,7 +395,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     });
-
 
     // =====================================
     // ELEMENTOS DAS ORDENS DE SERVIÇO

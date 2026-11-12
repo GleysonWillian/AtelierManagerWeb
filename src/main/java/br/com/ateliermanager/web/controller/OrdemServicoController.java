@@ -12,6 +12,7 @@ import br.com.ateliermanager.web.dto.OrdemServicoRequestDTO;
 import br.com.ateliermanager.web.repository.ClienteRepository;
 
 import br.com.ateliermanager.web.repository.ItemOrdemRepository;
+import br.com.ateliermanager.web.model.ItemOrdem;
 
 
 import java.util.List;
@@ -36,21 +37,33 @@ public class OrdemServicoController {
         this.itemOrdemRepository = itemOrdemRepository;
     }
 
+
     @GetMapping
     public List<OrdemServicoDTO> listar() {
 
         return ordemServicoRepository.listarComCliente()
                 .stream()
-                .map(ordem -> new OrdemServicoDTO(
-                        ordem.getIdOrdem(),
-                        ordem.getCliente().getIdCliente(),
-                        ordem.getCliente().getNome(),
-                        ordem.getDataEntrada(),
-                        ordem.getDataPrevistaEntrega(),
-                        ordem.getValorTotal(),
-                        ordem.getObservacoes(),
-                        ordem.getStatus()
-                ))
+                .map(ordem -> {
+
+                    String servicos = itemOrdemRepository
+                            .findByOrdemServico_IdOrdem(ordem.getIdOrdem())
+                            .stream()
+                            .map(ItemOrdem::getServico)
+                            .distinct()
+                            .collect(java.util.stream.Collectors.joining(", "));
+
+                    return new OrdemServicoDTO(
+                            ordem.getIdOrdem(),
+                            ordem.getCliente().getIdCliente(),
+                            ordem.getCliente().getNome(),
+                            ordem.getDataEntrada(),
+                            ordem.getDataPrevistaEntrega(),
+                            ordem.getValorTotal(),
+                            ordem.getObservacoes(),
+                            ordem.getStatus(),
+                            servicos
+                    );
+                })
                 .toList();
     }
 
@@ -59,18 +72,29 @@ public class OrdemServicoController {
             @PathVariable Integer id) {
 
         return ordemServicoRepository.buscarPorIdComCliente(id)
-                .map(ordem -> ResponseEntity.ok(
-                        new OrdemServicoDTO(
-                                ordem.getIdOrdem(),
-                                ordem.getCliente().getIdCliente(),
-                                ordem.getCliente().getNome(),
-                                ordem.getDataEntrada(),
-                                ordem.getDataPrevistaEntrega(),
-                                ordem.getValorTotal(),
-                                ordem.getObservacoes(),
-                                ordem.getStatus()
-                        )
-                ))
+                .map(ordem -> {
+
+                    String servicos = itemOrdemRepository
+                            .findByOrdemServico_IdOrdem(ordem.getIdOrdem())
+                            .stream()
+                            .map(ItemOrdem::getServico)
+                            .distinct()
+                            .collect(java.util.stream.Collectors.joining(", "));
+
+                    return ResponseEntity.ok(
+                            new OrdemServicoDTO(
+                                    ordem.getIdOrdem(),
+                                    ordem.getCliente().getIdCliente(),
+                                    ordem.getCliente().getNome(),
+                                    ordem.getDataEntrada(),
+                                    ordem.getDataPrevistaEntrega(),
+                                    ordem.getValorTotal(),
+                                    ordem.getObservacoes(),
+                                    ordem.getStatus(),
+                                    servicos
+                            )
+                    );
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 

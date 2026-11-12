@@ -13,6 +13,7 @@ public class OrdemServicoDTO {
     private BigDecimal valorTotal;
     private String observacoes;
     private String status;
+    private String servicos;
 
     public OrdemServicoDTO(
             Integer idOrdem,
@@ -22,7 +23,8 @@ public class OrdemServicoDTO {
             LocalDate dataPrevistaEntrega,
             BigDecimal valorTotal,
             String observacoes,
-            String status) {
+            String status,
+            String servicos) {
 
         this.idOrdem = idOrdem;
         this.idCliente = idCliente;
@@ -32,9 +34,8 @@ public class OrdemServicoDTO {
         this.valorTotal = valorTotal;
         this.observacoes = observacoes;
         this.status = status;
+        this.servicos = servicos;
     }
-
-    // Getters
 
     public Integer getIdOrdem() { return idOrdem; }
     public Integer getIdCliente() { return idCliente; }
@@ -44,4 +45,5 @@ public class OrdemServicoDTO {
     public BigDecimal getValorTotal() { return valorTotal; }
     public String getObservacoes() { return observacoes; }
     public String getStatus() { return status; }
+    public String getServicos() { return servicos; }
 }
