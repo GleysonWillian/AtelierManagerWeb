@@ -590,6 +590,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const acoes = document.createElement("td");
 
+            const btnVisualizar = document.createElement("button");
+            btnVisualizar.textContent = "Visualizar";
+            btnVisualizar.classList.add("btn-primary");
+
+            btnVisualizar.addEventListener("click", () => {
+                visualizarOrdem(ordem.idOrdem);
+            });
+
             const btnEditar = document.createElement("button");
             btnEditar.textContent = "Editar";
             btnEditar.classList.add("btn-secondary");
@@ -606,7 +614,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 excluirOrdem(ordem);
             });
 
-            acoes.append(btnEditar, btnExcluir);
+            acoes.append(btnVisualizar, btnEditar, btnExcluir);
             linha.append(id, cliente, entrada, entrega, valor, status, acoes);
 
             tabelaOrdens.appendChild(linha);
@@ -614,6 +622,148 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
     }
+
+
+
+async function visualizarOrdem(id) {
+
+    try {
+
+        const resposta = await fetch(`/api/ordens/${id}`);
+
+        if (!resposta.ok) {
+            throw new Error("Não foi possível buscar os dados da ordem.");
+        }
+
+        const ordem = await resposta.json();
+
+        const conteudo = document.getElementById("conteudoOrdem");
+
+        const formatarMoeda = valor => Number(valor || 0).toLocaleString(
+            "pt-BR",
+            { style: "currency", currency: "BRL" }
+        );
+
+        const formatarDataSegura = data => {
+            if (!data) return "Não informado";
+            return formatarData(data);
+        };
+
+        conteudo.innerHTML = `
+            <section class="detalhes-secao">
+                <h3>Dados do cliente</h3>
+
+                <div class="detalhes-grid">
+                    <div class="detalhe-item">
+                        <strong>Nome</strong>
+                        <span>${ordem.nomeCliente || "Não informado"}</span>
+                    </div>
+
+                    <div class="detalhe-item">
+                        <strong>Telefone</strong>
+                        <span>${ordem.telefoneCliente || "Não informado"}</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="detalhes-secao">
+                <h3>Dados da ordem</h3>
+
+                <div class="detalhes-grid">
+                    <div class="detalhe-item">
+                        <strong>Número da ordem</strong>
+                        <span>${ordem.idOrdem}</span>
+                    </div>
+
+                    <div class="detalhe-item">
+                        <strong>Status</strong>
+                        <span>${ordem.status || "Não informado"}</span>
+                    </div>
+
+                    <div class="detalhe-item">
+                        <strong>Data de entrada</strong>
+                        <span>${formatarDataSegura(ordem.dataEntrada)}</span>
+                    </div>
+
+                    <div class="detalhe-item">
+                        <strong>Previsão de entrega</strong>
+                        <span>${formatarDataSegura(ordem.dataPrevistaEntrega)}</span>
+                    </div>
+
+                    <div class="detalhe-item">
+                        <strong>Valor total</strong>
+                        <span>${formatarMoeda(ordem.valorTotal)}</span>
+                    </div>
+
+                    <div class="detalhe-item">
+                        <strong>Observações</strong>
+                        <span>${ordem.observacoes || "Nenhuma observação"}</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="detalhes-secao">
+                <h3>Serviços registrados</h3>
+
+                ${
+                    ordem.itens && ordem.itens.length > 0
+                    ? ordem.itens.map((item, indice) => `
+                        <div class="item-ordem">
+                            <h4>Item ${indice + 1} - ${item.tipoRoupa}</h4>
+
+                            <div class="detalhes-grid">
+                                <div class="detalhe-item">
+                                    <strong>Serviço</strong>
+                                    <span>${item.servico || "Não informado"}</span>
+                                </div>
+
+                                <div class="detalhe-item">
+                                    <strong>Medidas</strong>
+                                    <span>${item.medidas || "Não informado"}</span>
+                                </div>
+
+                                <div class="detalhe-item">
+                                    <strong>Valor</strong>
+                                    <span>${formatarMoeda(item.valor)}</span>
+                                </div>
+
+                                <div class="detalhe-item">
+                                    <strong>Observações</strong>
+                                    <span>${item.observacoes || "Nenhuma observação"}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join("")
+                    : "<p>Nenhum serviço registrado.</p>"
+                }
+            </section>
+        `;
+
+        document.getElementById("modalVisualizarOrdem").style.display = "flex";
+
+    } catch (erro) {
+
+        console.error("Erro ao visualizar ordem:", erro);
+        alert("Erro ao carregar os detalhes da ordem.");
+
+    }
+
+}
+
+
+const modalOrdem = document.getElementById("modalVisualizarOrdem");
+const btnFecharModalOrdem = document.getElementById("fecharModalOrdem");
+
+btnFecharModalOrdem.addEventListener("click", () => {
+    modalOrdem.style.display = "none";
+});
+
+// Fechar ao clicar fora da janela
+modalOrdem.addEventListener("click", (evento) => {
+    if (evento.target === modalOrdem) {
+        modalOrdem.style.display = "none";
+    }
+});
 
 
     // =====================================

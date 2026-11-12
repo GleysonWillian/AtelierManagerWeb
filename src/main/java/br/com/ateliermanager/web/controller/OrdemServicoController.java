@@ -1,18 +1,14 @@
-
 package br.com.ateliermanager.web.controller;
-
 import br.com.ateliermanager.web.model.OrdemServico;
 import br.com.ateliermanager.web.repository.OrdemServicoRepository;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import br.com.ateliermanager.web.dto.OrdemServicoDTO;
 import br.com.ateliermanager.web.dto.OrdemServicoRequestDTO;
 import br.com.ateliermanager.web.repository.ClienteRepository;
-
 import br.com.ateliermanager.web.repository.ItemOrdemRepository;
 import br.com.ateliermanager.web.model.ItemOrdem;
+import br.com.ateliermanager.web.dto.ItemOrdemDTO;
 
 
 import java.util.List;
@@ -38,32 +34,13 @@ public class OrdemServicoController {
     }
 
 
+
     @GetMapping
     public List<OrdemServicoDTO> listar() {
 
         return ordemServicoRepository.listarComCliente()
                 .stream()
-                .map(ordem -> {
-
-                    String servicos = itemOrdemRepository
-                            .findByOrdemServico_IdOrdem(ordem.getIdOrdem())
-                            .stream()
-                            .map(ItemOrdem::getServico)
-                            .distinct()
-                            .collect(java.util.stream.Collectors.joining(", "));
-
-                    return new OrdemServicoDTO(
-                            ordem.getIdOrdem(),
-                            ordem.getCliente().getIdCliente(),
-                            ordem.getCliente().getNome(),
-                            ordem.getDataEntrada(),
-                            ordem.getDataPrevistaEntrega(),
-                            ordem.getValorTotal(),
-                            ordem.getObservacoes(),
-                            ordem.getStatus(),
-                            servicos
-                    );
-                })
+                .map(this::converterParaDTO)
                 .toList();
     }
 
@@ -72,30 +49,43 @@ public class OrdemServicoController {
             @PathVariable Integer id) {
 
         return ordemServicoRepository.buscarPorIdComCliente(id)
-                .map(ordem -> {
-
-                    String servicos = itemOrdemRepository
-                            .findByOrdemServico_IdOrdem(ordem.getIdOrdem())
-                            .stream()
-                            .map(ItemOrdem::getServico)
-                            .distinct()
-                            .collect(java.util.stream.Collectors.joining(", "));
-
-                    return ResponseEntity.ok(
-                            new OrdemServicoDTO(
-                                    ordem.getIdOrdem(),
-                                    ordem.getCliente().getIdCliente(),
-                                    ordem.getCliente().getNome(),
-                                    ordem.getDataEntrada(),
-                                    ordem.getDataPrevistaEntrega(),
-                                    ordem.getValorTotal(),
-                                    ordem.getObservacoes(),
-                                    ordem.getStatus(),
-                                    servicos
-                            )
-                    );
-                })
+                .map(ordem -> ResponseEntity.ok(converterParaDTO(ordem)))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    private OrdemServicoDTO converterParaDTO(OrdemServico ordem) {
+
+        List<ItemOrdemDTO> itens = itemOrdemRepository
+                .findByOrdemServico_IdOrdem(ordem.getIdOrdem())
+                .stream()
+                .map(item -> new ItemOrdemDTO(
+                        item.getIdItem(),
+                        item.getTipoRoupa(),
+                        item.getServico(),
+                        item.getMedidas(),
+                        item.getObservacoes(),
+                        item.getValor()
+                ))
+                .toList();
+
+        String servicos = itens.stream()
+                .map(ItemOrdemDTO::getServico)
+                .distinct()
+                .collect(java.util.stream.Collectors.joining(", "));
+
+        return new OrdemServicoDTO(
+                ordem.getIdOrdem(),
+                ordem.getCliente().getIdCliente(),
+                ordem.getCliente().getNome(),
+                ordem.getCliente().getTelefone(),
+                ordem.getDataEntrada(),
+                ordem.getDataPrevistaEntrega(),
+                ordem.getValorTotal(),
+                ordem.getObservacoes(),
+                ordem.getStatus(),
+                servicos,
+                itens
+        );
     }
 
     @PostMapping
