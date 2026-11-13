@@ -33,4 +33,7 @@ public class ItemOrdemDTO {
     public String getMedidas() { return medidas; }
     public String getObservacoes() { return observacoes; }
     public BigDecimal getValor() { return valor; }
+    public void setIdItem(Integer idItem) {
+        this.idItem = idItem;
+    }
 }

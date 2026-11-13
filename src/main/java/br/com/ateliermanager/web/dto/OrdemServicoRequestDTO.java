@@ -3,6 +3,10 @@ package br.com.ateliermanager.web.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import java.util.List;
+import br.com.ateliermanager.web.model.ItemOrdem;
+
+
 public class OrdemServicoRequestDTO {
 
     private Integer idCliente;
@@ -11,6 +15,7 @@ public class OrdemServicoRequestDTO {
     private BigDecimal valorTotal;
     private String observacoes;
     private String status;
+    private List<ItemOrdemRequestDTO> itens;
 
     public Integer getIdCliente() {
         return idCliente;
@@ -58,5 +63,13 @@ public class OrdemServicoRequestDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public List<ItemOrdemRequestDTO> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemOrdemRequestDTO> itens) {
+        this.itens = itens;
     }
 }

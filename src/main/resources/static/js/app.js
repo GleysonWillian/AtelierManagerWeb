@@ -813,6 +813,7 @@ modalOrdem.addEventListener("click", (evento) => {
 
 function adicionarItemOrdem() {
     itensOrdem.push({
+        idItem: null,
         tipoRoupa: "",
         servico: "",
         medidas: "",
@@ -920,6 +921,19 @@ function calcularValorTotal() {
 
     async function editarOrdem(ordem) {
 
+        const resposta = await fetch(`/api/ordens/${ordem.idOrdem}`);
+
+        if (!resposta.ok) {
+            throw new Error("Não foi possível carregar os dados da ordem.");
+        }
+
+        ordem = await resposta.json();
+
+        itensOrdem = ordem.itens || [];
+
+        renderizarItensOrdem();
+        calcularValorTotal();
+
         ordemEmEdicao = ordem.idOrdem;
 
         await carregarClientesSelect();
@@ -969,7 +983,8 @@ function calcularValorTotal() {
             dataPrevistaEntrega: document.getElementById("data-entrega").value,
             valorTotal: Number(document.getElementById("valor-total").value),
             status: document.getElementById("status-ordem").value,
-            observacoes: document.getElementById("observacoes-ordem").value.trim()
+            observacoes: document.getElementById("observacoes-ordem").value.trim(),
+            itens: itensOrdem
         };
 
         if (!ordem.idCliente || !ordem.dataEntrada ||
