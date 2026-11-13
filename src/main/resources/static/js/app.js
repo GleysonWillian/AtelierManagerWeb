@@ -416,6 +416,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let ordemEmEdicao = null;
     let ordensCarregadas = [];
+    let itensOrdem = [];
+    const listaItensOrdem = document.getElementById("lista-itens-ordem");
+    const btnAdicionarItem = document.getElementById("btn-adicionar-item");
+
+    btnAdicionarItem.addEventListener("click", () => {
+        adicionarItemOrdem();
+    });
+
+
+listaItensOrdem.addEventListener("input", (evento) => {
+    const campo = evento.target.dataset.campo;
+    const index = evento.target.dataset.index;
+
+    if (campo === undefined || index === undefined) {
+        return;
+    }
+
+    const valor = campo === "valor"
+        ? Number(evento.target.value)
+        : evento.target.value;
+
+    itensOrdem[Number(index)][campo] = valor;
+
+    if (campo === "valor") {
+        calcularValorTotal();
+    }
+});
 
     // =====================================
     // ELEMENTOS DAS MOVIMENTAÇÕES
@@ -430,6 +457,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         ordemEmEdicao = null;
         formularioOrdem.reset();
+        itensOrdem = [];
+        renderizarItensOrdem();
+        adicionarItemOrdem();
 
         document.getElementById("titulo-form-ordem").textContent =
             "Nova Ordem de Serviço";
@@ -779,6 +809,109 @@ modalOrdem.addEventListener("click", (evento) => {
         return `${dia}/${mes}/${ano}`;
 
     }
+
+
+function adicionarItemOrdem() {
+    itensOrdem.push({
+        tipoRoupa: "",
+        servico: "",
+        medidas: "",
+        observacoes: "",
+        valor: 0
+    });
+
+    renderizarItensOrdem();
+}
+
+
+function renderizarItensOrdem() {
+    listaItensOrdem.innerHTML = "";
+
+    itensOrdem.forEach((item, index) => {
+        const div = document.createElement("div");
+
+        div.className = "item-ordem";
+
+        div.innerHTML = `
+            <h4>Peça ${index + 1}</h4>
+
+            <div class="form-group">
+                <label>Tipo de roupa</label>
+                <input type="text"
+                    data-campo="tipoRoupa"
+                    data-index="${index}"
+                    value="${item.tipoRoupa}"
+                    placeholder="Ex.: Calça, camisa, vestido"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label>Serviço</label>
+                <input type="text"
+                    data-campo="servico"
+                    data-index="${index}"
+                    value="${item.servico}"
+                    placeholder="Ex.: Ajuste de barra"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label>Medidas</label>
+                <textarea
+                    data-campo="medidas"
+                    data-index="${index}"
+                    placeholder="Informe as medidas">${item.medidas}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Observações</label>
+                <textarea
+                    data-campo="observacoes"
+                    data-index="${index}"
+                    placeholder="Observações sobre esta peça">${item.observacoes}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Valor (R$)</label>
+                <input type="number"
+                    data-campo="valor"
+                    data-index="${index}"
+                    value="${item.valor}"
+                    min="0"
+                    step="0.01"
+                    required>
+            </div>
+
+            <button type="button"
+                class="btn-danger"
+                data-remover="${index}">
+                Remover peça
+            </button>
+        `;
+
+        listaItensOrdem.appendChild(div);
+        div.querySelector("[data-remover]").addEventListener("click", () => {
+            removerItemOrdem(index);
+        });
+    });
+}
+
+
+function removerItemOrdem(index) {
+    itensOrdem.splice(index, 1);
+    renderizarItensOrdem();
+    calcularValorTotal();
+}
+
+
+function calcularValorTotal() {
+    const total = itensOrdem.reduce((soma, item) => {
+        return soma + (Number(item.valor) || 0);
+    }, 0);
+
+    document.getElementById("valor-total").value = total.toFixed(2);
+}
+
 
 
     // =====================================
